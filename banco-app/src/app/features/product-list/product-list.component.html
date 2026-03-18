@@ -1,0 +1,176 @@
+<div class="page-container" (click)="closeMenu()">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-brand">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 3H8L2 7h20l-6-4z"/>
+          <line x1="12" y1="12" x2="12" y2="17"/>
+          <line x1="9" y1="14.5" x2="15" y2="14.5"/>
+        </svg>
+        <span class="header-title">BANCO</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="card">
+
+      <!-- Controls row -->
+      <div class="controls-row">
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearch()"
+            id="search-input"
+          />
+        </div>
+        <button class="btn-add" (click)="navigateToAdd()" id="btn-add-product">
+          Agregar
+        </button>
+      </div>
+
+      <!-- Error state -->
+      <div class="alert-error" *ngIf="error">
+        <span>⚠️ {{ error }}</span>
+        <button class="btn-retry" (click)="loadProducts()">Reintentar</button>
+      </div>
+
+      <!-- Loading state -->
+      <div class="loading-wrapper" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Cargando productos...</p>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper" *ngIf="!isLoading && !error">
+        <table class="products-table" id="products-table">
+          <thead>
+            <tr>
+              <th>Logo</th>
+              <th>
+                Nombre del producto
+              </th>
+              <th>
+                Descripción
+                <span class="info-tooltip" title="Descripción del producto financiero">ⓘ</span>
+              </th>
+              <th>
+                Fecha de liberación
+                <span class="info-tooltip" title="Fecha en que el producto fue liberado al público">ⓘ</span>
+              </th>
+              <th>
+                Fecha de reestructuración
+                <span class="info-tooltip" title="Fecha de revisión de términos y condiciones">ⓘ</span>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of paginatedProducts" class="table-row">
+              <td class="logo-cell">
+                <div class="avatar" *ngIf="!isImageUrl(product.logo)">
+                  {{ getLogoInitials(product.name) }}
+                </div>
+                <img
+                  *ngIf="isImageUrl(product.logo)"
+                  [src]="product.logo"
+                  [alt]="product.name"
+                  class="logo-img"
+                  (error)="product.logo = ''"
+                />
+              </td>
+              <td class="name-cell">{{ product.name }}</td>
+              <td class="desc-cell">{{ product.description }}</td>
+              <td>{{ product.date_release | date:'dd/MM/yyyy' }}</td>
+              <td>{{ product.date_revision | date:'dd/MM/yyyy' }}</td>
+              <td class="actions-cell">
+                <div class="menu-wrapper">
+                  <button
+                    class="btn-menu"
+                    (click)="toggleMenu(product.id, $event)"
+                    [attr.id]="'menu-btn-' + product.id"
+                  >⋮</button>
+                  <div
+                    class="dropdown-menu"
+                    *ngIf="openMenuId === product.id"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <button
+                      class="dropdown-item"
+                      (click)="navigateToEdit(product)"
+                      [attr.id]="'edit-btn-' + product.id"
+                    >Editar</button>
+                    <button
+                      class="dropdown-item dropdown-item--danger"
+                      (click)="confirmDelete(product)"
+                      [attr.id]="'delete-btn-' + product.id"
+                    >Eliminar</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="paginatedProducts.length === 0 && !isLoading">
+              <td colspan="6" class="empty-state">
+                <span>No se encontraron productos</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer row -->
+      <div class="table-footer" *ngIf="!isLoading && !error">
+        <span class="results-count">{{ filteredProducts.length }} Resultados</span>
+        <div class="pagination-controls">
+          <button
+            class="btn-pagination"
+            [disabled]="currentPage === 1"
+            (click)="onPageChange(currentPage - 1)"
+          >
+            &lt;
+          </button>
+          <span class="page-info">
+            Página {{ currentPage }} de {{ totalPages }}
+          </span>
+          <button
+            class="btn-pagination"
+            [disabled]="currentPage === totalPages"
+            (click)="onPageChange(currentPage + 1)"
+          >
+            &gt;
+          </button>
+        </div>
+        <div class="page-size-wrapper">
+          <select
+            class="page-size-select"
+            [(ngModel)]="pageSize"
+            (ngModelChange)="onPageSizeChange()"
+            id="page-size-select"
+          >
+            <option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }}</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Delete Modal -->
+  <app-delete-confirm-modal
+    *ngIf="showModal"
+    [productName]="productToDelete?.name || ''"
+    (confirmed)="onDeleteConfirmed($event)"
+  ></app-delete-confirm-modal>
+
+</div>

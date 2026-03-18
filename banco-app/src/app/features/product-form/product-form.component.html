@@ -1,0 +1,133 @@
+<div class="page-container">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div onclick="window.location.href='/'" class="header-brand">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 3H8L2 7h20l-6-4z"/>
+          <line x1="12" y1="12" x2="12" y2="17"/>
+          <line x1="9" y1="14.5" x2="15" y2="14.5"/>
+        </svg>
+        <span class="header-title">BANCO</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="card">
+
+      <h2 class="form-title">Formulario de Registro</h2>
+      <div class="form-divider"></div>
+
+      <div class="alert-error" *ngIf="submitError">
+        ⚠️ {{ submitError }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-grid">
+
+          <!-- ID -->
+          <div class="form-field" [class.field-disabled]="isEditMode">
+            <label for="field-id">ID</label>
+            <input
+              id="field-id"
+              type="text"
+              formControlName="id"
+              [class.invalid]="isInvalid('id') || (form.get('id')?.errors?.['idExists'])"
+              placeholder=""
+            />
+            <span class="spinner-inline" *ngIf="isIdChecking()">Verificando...</span>
+            <span class="field-error" *ngIf="isInvalid('id') && !isIdChecking()">
+              {{ getError('id') }}
+            </span>
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-field">
+            <label for="field-name">Nombre</label>
+            <input
+              id="field-name"
+              type="text"
+              formControlName="name"
+              [class.invalid]="isInvalid('name')"
+            />
+            <span class="field-error" *ngIf="isInvalid('name')">{{ getError('name') }}</span>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-field">
+            <label for="field-desc">Descripción</label>
+            <input
+              id="field-desc"
+              type="text"
+              formControlName="description"
+              [class.invalid]="isInvalid('description')"
+              placeholder=""
+            />
+            <span class="field-error" *ngIf="isInvalid('description')">{{ getError('description') }}</span>
+          </div>
+
+          <!-- Logo -->
+          <div class="form-field">
+            <label for="field-logo">Logo</label>
+            <input
+              id="field-logo"
+              type="text"
+              formControlName="logo"
+              [class.invalid]="isInvalid('logo')"
+              placeholder="https://..."
+            />
+            <span class="field-error" *ngIf="isInvalid('logo')">{{ getError('logo') }}</span>
+          </div>
+
+          <!-- Fecha Liberación -->
+          <div class="form-field">
+            <label for="field-release">Fecha Liberación</label>
+            <input
+              id="field-release"
+              type="date"
+              formControlName="date_release"
+              [class.invalid]="isInvalid('date_release')"
+            />
+            <span class="field-error" *ngIf="isInvalid('date_release')">{{ getError('date_release') }}</span>
+          </div>
+
+          <!-- Fecha Revisión -->
+          <div class="form-field field-disabled">
+            <label for="field-revision">Fecha Revisión</label>
+            <input
+              id="field-revision"
+              type="date"
+              formControlName="date_revision"
+              placeholder="22/02/2024"
+            />
+          </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="onReset()"
+            id="btn-reset"
+          >Reiniciar</button>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="form.invalid || form.pending || isSubmitting"
+            id="btn-submit"
+          >
+            <span *ngIf="!isSubmitting">Enviar</span>
+            <span *ngIf="isSubmitting">Guardando...</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </main>
+</div>
