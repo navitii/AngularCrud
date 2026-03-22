@@ -76,3 +76,8 @@ npm run start:dev    # → corre en http://localhost:3002
 cd banco-app
 npm install
 npm start            # → corre en http://localhost:4200
+
+Preview: 
+<img width="1155" height="538" alt="image" src="https://github.com/user-attachments/assets/a2abbd32-4b72-4678-b134-7e792c4a3814" />
+<img width="1221" height="445" alt="image" src="https://github.com/user-attachments/assets/b8c05d1e-22c8-471a-a447-8b72912e8c37" />
+
